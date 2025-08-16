@@ -52,7 +52,7 @@
             <!-- botton logout -->
             <div class="absolute bottom-0 w-full">
                 <button class="bg-red-600 w-full rounded-sm py-1 text-white hover:bg-red-700 transition">
-                    <v-icon name="hi-logout" /> ចាក់ចេញ
+                    <v-icon name="hi-logout" /> ចាកចេញ
                 </button>
             </div>
             <!-- botton logout -->
