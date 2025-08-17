@@ -16,31 +16,31 @@
 
             <!-- Menu -->
             <ul class="mt-3">
-                <router-link>
+                <router-link to="/dashboard">
                     <li class="hover:bg-blue-950 transition p-2 text-white rounded-lg flex items-center">
                         <v-icon name="md-dashboard-round" /> 
                         <p class="ms-1 mt-1">ទំព័រដើម</p>
                     </li>
                 </router-link>
-                <router-link>
+                <router-link to="/dashboard/job">
                     <li class="hover:bg-blue-950 transition p-2 text-white rounded-lg flex items-center">
                         <v-icon name="md-workhistory" /> 
                         <p class="ms-1 mt-1">ការងារ</p>
                     </li>
                 </router-link>
-                 <router-link>
+                 <router-link to="/dashboard/category">
                     <li class="hover:bg-blue-950 transition p-2 text-white rounded-lg flex items-center">
                         <v-icon name="md-workspacesfilled" />
                         <p class="ms-1 mt-1">ប្រភេទ</p>
                     </li>
                 </router-link>
-                <router-link>
+                <router-link to="/dashboard/company">
                     <li class="hover:bg-blue-950 transition p-2 text-white rounded-lg flex items-center">
                         <v-icon name="hi-solid-office-building" /> 
                         <p class="ms-1 mt-1">ក្រុមហ៊ុន</p>
                     </li>
                 </router-link>
-                <router-link>
+                <router-link to="/dashboard/location">
                     <li class="hover:bg-blue-950 transition p-2 text-white rounded-lg flex items-center">
                         <v-icon name="bi-pin-map-fill"/> 
                         <p class="ms-1 mt-1">ទីតាំង</p>

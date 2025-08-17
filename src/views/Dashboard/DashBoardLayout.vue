@@ -7,7 +7,7 @@ import Header from './components/Header.vue';
     <div class="flex">
         <SideBar />
 
-        <main class="lg:w-[85%] p-4">
+        <main class="lg:w-[85%] px-12 py-4">
             <Header />
             <router-view></router-view>
         </main>

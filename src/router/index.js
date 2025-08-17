@@ -19,10 +19,10 @@ const routes = [
         component: DashBoardLayout, // is a layout that control all dashboard page and component
         children:[
             { path:'',component:Home }, // auto go to Home Page
-            { path:'/job',component:Job }, // slash job navigate Jobpage
-            { path:'/category',component:Category },  // slash category navigate categorypage
-            { path:'/location',component:Location }, // slash location navigate locationpage
-            { path:'/company',component:Company }, // slash company navigate companypage
+            { path:'job',component:Job }, // slash job navigate Jobpage
+            { path:'category',component:Category },  // slash category navigate categorypage
+            { path:'location',component:Location }, // slash location navigate locationpage
+            { path:'company',component:Company }, // slash company navigate companypage
             
         ]
     },
