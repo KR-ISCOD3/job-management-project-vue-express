@@ -1,10 +1,11 @@
 <script setup>
 import SideBar from './components/SideBar.vue';
 import Header from './components/Header.vue';
+import NotFoundPage from './components/NotFoundPage.vue';
 </script>
 
 <template>
-    <div class="flex">
+    <div class="hidden lg:flex">
         <SideBar />
 
         <main class="lg:w-[85%] px-12 py-4">
@@ -12,4 +13,5 @@ import Header from './components/Header.vue';
             <router-view></router-view>
         </main>
     </div>
+    <NotFoundPage/>
 </template>

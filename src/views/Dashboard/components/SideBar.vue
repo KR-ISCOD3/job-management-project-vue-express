@@ -1,4 +1,14 @@
 <script setup>
+    import { ref } from 'vue';
+    const logoutModal = ref(false);
+
+    function openModal(){
+        logoutModal.value = true
+    }
+    function closeModal(){
+        logoutModal.value = false
+    }
+
 </script>
 
 <template>
@@ -51,7 +61,7 @@
 
             <!-- botton logout -->
             <div class="absolute bottom-0 w-full">
-                <button class="bg-red-600 w-full rounded-sm py-1 text-white hover:bg-red-700 transition">
+                <button @click="openModal" class="bg-red-600 w-full rounded-sm py-1 text-white hover:bg-red-700 transition">
                     <v-icon name="hi-logout" /> ចាកចេញ
                 </button>
             </div>
@@ -60,5 +70,34 @@
         </div>
         <!-- Content Sidebar -->
 
+
+        <!-- Modal Logout -->
+        <div
+            v-if="logoutModal"
+            class="fixed inset-0 flex items-center justify-center bg-[#00000034]"
+        >
+            <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+
+            <h2 class="text-lg font-bold mb-3 text-red-600 border-b border-gray-200 pb-2">ចាកចេញ</h2>
+            <form action="" class="flex items-center justify-between">
+                <div>
+                <p class="mb-4">តើអ្នកប្រាកដថាចាកចេញមែនឬទេ?</p>
+                </div>
+
+                <div class="flex justify-end gap-2 mb-4">
+                <button @click="closeModal" class="px-3 py-1 border rounded">អត់ទេ</button>
+                <button
+                    class="px-3 py-1 border rounded bg-red-600 text-white"
+                >
+                    បាទ
+                </button>
+                </div>
+            </form>
+            
+            </div>
+        </div>
+        <!-- Modal Logout -->
+
     </div>
+
 </template>

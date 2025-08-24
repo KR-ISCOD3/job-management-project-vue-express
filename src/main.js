@@ -17,7 +17,11 @@ import {
   IoSettings,
   MdWork,
   RiBuildingFill,
-  HiSolidTrendingUp 
+  HiSolidTrendingUp,
+  BiSearch,
+  BiTrash,
+  BiEye,
+  BiPenFill    
 } from 'oh-vue-icons/icons';
 
 // Add icons to the library
@@ -33,7 +37,11 @@ addIcons(
   IoSettings,
   MdWork,
   RiBuildingFill,
-  HiSolidTrendingUp 
+  HiSolidTrendingUp,
+  BiSearch,
+  BiTrash,
+  BiEye,
+  BiPenFill 
 );
 
 
