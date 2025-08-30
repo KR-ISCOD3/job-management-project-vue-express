@@ -1,0 +1,38 @@
+<script setup lang="ts">
+import NotFoundPage from './components/NotFoundPage.vue';
+
+</script>
+
+
+<template>
+    <div class="w-full h-[100vh] flex items-center justify-center">
+        <div class="w-[30%] hidden lg:block border border-blue-900  rounded-sm p-10 text-center">
+            <h2 class="text-4xl font-bold text-blue-900">បង្កើតគនណី</h2>
+            
+            <p class="mt-3 text-gray-500">បញ្ចូលព័ត៍មានរបស់អ្នក</p>
+
+            <form action="" class="mt-5">
+                
+                <!-- <p class="text-red-500 bg-red-200 py-2 rounded-sm mb-2">Invalid some filde</p> -->
+
+                <input required type="text" name="" id="" placeholder="ឈ្មោះ" class="w-full border-b border-blue-900 py-2 outline-0 mb-3">
+                <input required type="email" name="" id="" placeholder="example@gmail.com" class="w-full border-b border-blue-900 py-2 outline-0 mb-3">
+                <input required type="password" name="" id="" placeholder="លេខសម្ងាត់" class="w-full border-b border-blue-900 py-2 outline-0 mb-3">
+
+                
+                <button class="w-full border p-2 border-blue-900 text-blue-900 hover:bg-blue-800 hover:text-white transition mt-2">
+                    អញ្ជើញចូលមកបើស្រលាញ់
+                </button>
+
+                <p class="mt-6 text-gray-500">
+                    បើមានគនណីហើយចូលគនណីប្រូទៅ
+                    <router-link to="/login" class="text-blue-500 underline hover:text-blue-700 transition">
+                        ចូលគនណី
+                    </router-link>
+                </p>
+            </form>
+        </div>
+
+        <NotFoundPage/>
+    </div>
+</template>

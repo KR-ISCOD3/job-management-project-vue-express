@@ -10,6 +10,8 @@ import Job from "@/views/Dashboard/pages/Job.vue";
 import Category from "@/views/Dashboard/pages/Category.vue";
 import Company from "@/views/Dashboard/pages/Company.vue";
 import Location from "@/views/Dashboard/pages/Location.vue";
+import Login from "@/views/Dashboard/Login.vue";
+import Register from "@/views/Dashboard/Register.vue";
 
 
 // make route for project
@@ -24,14 +26,21 @@ const routes = [
             { path:'location',component:Location }, // slash location navigate locationpage
             { path:'company',component:Company }, // slash company navigate companypage
             
-        ]
+        ],
     },
-    {
 
+    {
+        path:'/login',
+        component: Login
+    },
+
+    {
+        path:'/register',
+        component: Register
     }
 ]
 
-// create router for project
+// create router for project    
 const router = createRouter({
     history: createWebHistory(), // preventer refresh page
     routes // take all routes to page
