@@ -12,6 +12,8 @@ import Company from "@/views/Dashboard/pages/Company.vue";
 import Location from "@/views/Dashboard/pages/Location.vue";
 import Login from "@/views/Dashboard/Login.vue";
 import Register from "@/views/Dashboard/Register.vue";
+import FrontLayout from "@/views/Frontpage/FrontLayout.vue";
+import FrontHome from "@/views/Frontpage/pages/FrontHome.vue";
 
 
 // make route for project
@@ -27,6 +29,14 @@ const routes = [
             { path:'company',component:Company }, // slash company navigate companypage
             
         ],
+        
+    },
+    {
+        path:'/',
+        component: FrontLayout,
+        children:[
+            {path:'',component:FrontHome},
+        ]
     },
 
     {

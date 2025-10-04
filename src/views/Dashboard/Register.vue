@@ -1,5 +1,43 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import NotFoundPage from './components/NotFoundPage.vue';
+import { useAuthStore } from '@/stores/auth';
+
+
+const name = ref("")
+const email = ref("")
+const password = ref("")
+
+const message = ref("")
+const errorLength = ref(false)
+
+const isLoading = ref(false);
+
+const authStore = useAuthStore();
+
+const handleRegister = async () =>{
+
+    if(password.value.length < 8) {
+        errorLength.value = true;
+        message.value = "លេខសម្ងាត់ប្រូតិចមេសដាក់ 8 ខ្ទង់មកប្រូ"
+        return
+    };
+
+    try{
+        isLoading.value = true
+        await authStore.register(name.value,email.value,password.value);
+
+        name.value = "";
+        email.value = "";
+        password.value = "";
+
+    }catch(e){
+        console.error(e);
+    }finally{
+        isLoading.value = false
+    }
+}
+
 
 </script>
 
@@ -7,27 +45,43 @@ import NotFoundPage from './components/NotFoundPage.vue';
 <template>
     <div class="w-full h-[100vh] flex items-center justify-center">
         <div class="w-[30%] hidden lg:block border border-blue-900  rounded-sm p-10 text-center">
-            <h2 class="text-4xl font-bold text-blue-900">បង្កើតគនណី</h2>
+            <h2 class="text-4xl font-bold text-blue-900">បង្កើតគណនី</h2>
             
             <p class="mt-3 text-gray-500">បញ្ចូលព័ត៍មានរបស់អ្នក</p>
 
-            <form action="" class="mt-5">
+            <form @submit.prevent="handleRegister" class="mt-5">
                 
                 <!-- <p class="text-red-500 bg-red-200 py-2 rounded-sm mb-2">Invalid some filde</p> -->
 
-                <input required type="text" name="" id="" placeholder="ឈ្មោះ" class="w-full border-b border-blue-900 py-2 outline-0 mb-3">
-                <input required type="email" name="" id="" placeholder="example@gmail.com" class="w-full border-b border-blue-900 py-2 outline-0 mb-3">
-                <input required type="password" name="" id="" placeholder="លេខសម្ងាត់" class="w-full border-b border-blue-900 py-2 outline-0 mb-3">
+                <input v-model="name" required type="text" name="" id="" placeholder="ឈ្មោះ" class="w-full border-b border-blue-900 py-2 outline-0 mb-3">
+                <input v-model="email" required type="email" name="" id="" placeholder="example@gmail.com" class="w-full border-b border-blue-900 py-2 outline-0 mb-3">
 
+                <input v-model="password" required type="password" name="" id="" 
+                    placeholder="លេខសម្ងាត់" 
+
+                    class="w-full border-b border-blue-900 py-2 outline-0 mb-3" 
+                    :class="errorLength?'border-red-600 text-red-600':'border-blue-900 text-black' ">
+
+                <!-- error message -->
+                <p v-if="errorLength" class="text-red-500 mb-3 text-start">
+                    {{ message }}
+                </p>
+                <!-- error message -->
                 
-                <button class="w-full border p-2 border-blue-900 text-blue-900 hover:bg-blue-800 hover:text-white transition mt-2">
-                    អញ្ជើញចូលមកបើស្រលាញ់
+                <button
+                    :disabled="isLoading"
+                    class="w-full border p-2 border-blue-900 text-blue-900 transition mt-2
+                            hover:bg-blue-800 hover:text-white disabled:opacity-50 
+                            disabled:cursor-not-allowed disabled:hover:bg-blue-900 disabled:hover:text-blue-900
+                            disabled:pointer-events-none"
+                >
+                    {{ isLoading ? "ចាំតិចប្រូកំពុងដំណើរការ..." : "អញ្ជើញចូលមកបើស្រលាញ់" }}
                 </button>
 
                 <p class="mt-6 text-gray-500">
-                    បើមានគនណីហើយចូលគនណីប្រូទៅ
+                    បើមានគណនីហើយចូលគណនីប្រូទៅ
                     <router-link to="/login" class="text-blue-500 underline hover:text-blue-700 transition">
-                        ចូលគនណី
+                        ចូលគណនី
                     </router-link>
                 </p>
             </form>

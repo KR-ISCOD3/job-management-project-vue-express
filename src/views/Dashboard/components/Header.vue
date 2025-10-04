@@ -1,4 +1,14 @@
 <script setup>
+import { onMounted} from 'vue';
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
+
+onMounted(async () => {
+    await authStore.getProfile();
+    console.log(authStore.user);
+})
+
 
 </script>
 
@@ -11,7 +21,7 @@
                 <img src="" alt="" class="w-full h-full object-cover">
             </div>
             <span class="text-blue-900 font-medium">
-                Mr.Jork
+                {{ authStore.user?.name }}
             </span>
         </div>
     </div>
