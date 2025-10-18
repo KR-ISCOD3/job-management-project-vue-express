@@ -5,6 +5,9 @@ import App from './App.vue'
 import router from './router'
 import { createPinia } from "pinia";
 
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
 import { OhVueIcon, addIcons } from 'oh-vue-icons';
 import {
   MdDashboardRound,
@@ -47,6 +50,10 @@ addIcons(
 
 
 const app = createApp(App)
+app.use(Toast, {
+  position: "top-right",
+  timeout: 3000,
+});
 app.use(createPinia());
 app.use(router) // make your App.vue can use router
 app.component("v-icon", OhVueIcon);

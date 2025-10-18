@@ -3,8 +3,9 @@
   import { ref } from 'vue';
   import TableJobs from '../components/TableJobs.vue';
 
-  const showAddJobModal = ref(false);
 
+  const showAddJobModal = ref(false);
+ 
 
   function openModal() {
     showAddJobModal.value = true;

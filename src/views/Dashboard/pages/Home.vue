@@ -1,7 +1,7 @@
 <script setup>
-import JobLineChart from '../components/JobLineChart.vue';
-import CardDashboard from '../components/CardDashboard.vue';
-import JobOverview from '../components/JobOverview.vue';
+    import JobLineChart from '../components/JobLineChart.vue';
+    import CardDashboard from '../components/CardDashboard.vue';
+    import JobOverview from '../components/JobOverview.vue';
 </script>
 
 <template>

@@ -36,18 +36,21 @@ const handelLogin = async () =>{
     }
 }
 
-onMounted(async () =>{
-    await authStore.getProfile();
-    // If already logged in, redirect to dashboard
-    console.log(authStore.user);
-
-    // if(authStore.user?.role === 'user'){
-    //     router.push('/')
-    // }else{
-    //     router.push('/dashboard')
-    // }   
-    
-})
+onMounted(async () => {
+    isLoading.value = true;
+    try {
+        await authStore.getProfile();
+        // If user is already logged in, redirect
+        if (authStore.user) {
+            if (authStore.user.role === 'user') router.push('/');
+            else router.push('/dashboard');
+        }
+    } catch (err) {
+        console.error("Failed to fetch profile:", err);
+    } finally {
+        isLoading.value = false;
+    }
+});
 
 </script>
 <template>

@@ -1,12 +1,24 @@
 <script setup>
     import { ref } from 'vue';
+    import { useAuthStore } from '@/stores/auth';
+
     const logoutModal = ref(false);
+    const authStore = useAuthStore();
 
     function openModal(){
         logoutModal.value = true
     }
     function closeModal(){
         logoutModal.value = false
+    }
+
+    const Logout = async () =>{
+        try{
+            const res = await authStore.logout();
+            console.log(res.data);
+        }catch(e){
+
+        }
     }
 
 </script>
@@ -87,6 +99,7 @@
                 <div class="flex justify-end gap-2 mb-4">
                 <button @click="closeModal" class="px-3 py-1 border rounded">អត់ទេ</button>
                 <button
+                    @click="Logout"
                     class="px-3 py-1 border rounded bg-red-600 text-white"
                 >
                     បាទ

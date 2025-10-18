@@ -1,23 +1,27 @@
 <script setup>
-    import { ref, computed } from "vue";
+    import { ref, computed, onMounted } from "vue";
+    import { useLocationStore } from "@/stores/location";
+    import { useToast } from "vue-toastification";
+
+    const locationStore = useLocationStore()
+    const isloading = ref(false)
+    const toast = useToast();
 
     // Total fake items and pagination settings
-    const totalItems = 50; // total rows
     const perPage = 5;
     const currentPage = ref(1);
 
-    // Total pages
-    const totalPages = computed(() => Math.ceil(totalItems / perPage));
+    // Total pages (computed dynamically based on fetched data)
+    const totalPages = computed(() =>
+        Math.ceil((locationStore.locations?.length || 0) / perPage)
+    );
 
     // Generate rows for the current page
     const pageItems = computed(() => {
-        const start = (currentPage.value - 1) * perPage + 1;
-        const end = Math.min(start + perPage - 1, totalItems);
-        const items = [];
-        for (let i = start; i <= end; i++) {
-            items.push(i);
-        }
-        return items;
+        const data = locationStore.locations || []; // ensure array
+        const start = (currentPage.value - 1) * perPage;
+        const end = start + perPage;
+        return data.slice(start, end); // slice is safe now
     });
 
     function goToPage(page) {
@@ -29,44 +33,70 @@
     const deleteId = ref(null);
 
     function openModalDelete(id) {
-      deleteId.value = id;
-      showDeleteLocationModal.value = true;
+        deleteId.value = id;
+        showDeleteLocationModal.value = true;
     }
 
     function closeModalDelete() {
-      deleteId.value = null;
-      showDeleteLocationModal.value = false;
+        deleteId.value = null;
+        showDeleteLocationModal.value = false;
     }
 
-    function confirmDelete() {
-      console.log("Delete job with ID:", deleteId.value);
-      // TODO: call your API delete function here
-      closeModalDelete();
+    async function confirmDelete() {
+        // console.log("Delete job with ID:", deleteId.value);
+        try{
+            isloading.value = true
+            await locationStore.deleteLocation(deleteId.value);
+            await locationStore.fetchLocation();
+            toast.success("Location delete successfully!");
+        }catch(e){
+            console.log('Message:',e)
+        }finally{
+            isloading.value = false
+            closeModalDelete();
+        }
     }
 
 
     // --- Modal Update ---
     const showUpLocationModal = ref(false);
-    const updateCompany = ref(null)
-   
+    const updateLocation = ref({
+        id:null,
+        name:"",
+        poscode:""
+    })
 
-    function openModalUpdate(id) {
-      updateCompany.value = id; // clone object so editing won't affect original
-      showUpLocationModal.value = true;
+
+    function openModalUpdate(loc) {
+        updateLocation.value = {...loc}; // clone object so editing won't affect original
+        showUpLocationModal.value = true;
     }
 
     function closeModalUpdate() {
-      showUpLocationModal.value = false;
-      updateJob.value = {};
+        showUpLocationModal.value = false;
+        updateJob.value = {};
     }
 
-    function saveUpdate() {
-      console.log("Update Category:", updateCompany.value);
-      // TODO: Call API update
-      // Example: await axios.put(`/api/jobs/${updateJob.value.id}`, updateJob.value)
-
-      showUpLocationModal.value = false;
+    async function saveUpdate() {
+        // console.log('Your update data: ',updateLocation.value);
+        try{
+            isloading.value = true
+            await locationStore.updateLocation(updateLocation.value);
+            await locationStore.fetchLocation();
+            toast.success("Location updated successfully!");
+            closeModalUpdate();
+        }catch(e){
+            console.error("Update failed:", e);
+        }finally{
+            isloading.value = false
+        }
     }
+
+    onMounted(async () => {
+        await locationStore.fetchLocation();       // wait for data to be fetched
+        console.log(locationStore.locations);     // log the reactive state
+    });
+
 </script>
 
 <template>
@@ -75,145 +105,122 @@
     <div class="mt-3 h-[45vh] overflow-hidden">
         <table class="w-full border border-blue-900">
 
-        <thead>
-            <tr class="bg-white">
-            <td class="text-gray-500 p-2 border text-center">#</td>
-            <td class="text-gray-500 p-2 border ">ទីតាំង</td>
-            <td class="text-gray-500 p-2 border text-center">Postcode</td>
-            <td class="text-gray-500 p-2 border text-center">បានផុស</td>
-            <td class="text-gray-500 p-2 border text-center">បានកែប្រែ</td>
-            <td class="text-gray-500 p-2 border text-center">Action</td>
-            </tr>
-        </thead>
+            <thead>
+                <tr class="bg-white">
+                <td class="text-gray-500 p-2 border text-center">#</td>
+                <td class="text-gray-500 p-2 border ">ទីតាំង</td>
+                <td class="text-gray-500 p-2 border text-center">Postcode</td>
+                <td class="text-gray-500 p-2 border text-center">បានផុស</td>
+                <td class="text-gray-500 p-2 border text-center">បានកែប្រែ</td>
+                <td class="text-gray-500 p-2 border text-center">Action</td>
+                </tr>
+            </thead>
 
-        <tbody>
-            <tr v-for="i in pageItems" :key="i">
-            <td class="p-2 border border-gray-500 text-blue-900 text-center">{{ i }}</td>
-            <td class="p-2 border border-gray-500 text-blue-900">
-                <p>Phnom Penh</p>
-            </td>
-            
-            <td class="p-2 border border-gray-500 text-blue-900 text-center">
-                <p>08921</p>
-            </td>
-            <td class="p-2 border border-gray-500 text-blue-900 text-center">
-                <span class="bg-gray-200 text-gray-700 px-1 rounded-lg">2025-08-23</span>
-            </td>
-            <td class="p-2 border border-gray-500 text-blue-900 text-center">
-                <span class="bg-gray-200 text-gray-700 px-1 rounded-lg">2025-08-23</span>
-            </td>
-            <td class="p-2 border border-gray-500 text-blue-900">
-                <div class="flex justify-center">
-                <button @click="openModalUpdate(i)"  class="mx-1 border p-1 rounded-lg border-amber-600 text-amber-600">
-                    <v-icon name="bi-pen-fill" />
-                </button>
-                <button @click="openModalDelete(i)" class="mx-1 border p-1 rounded-lg border-red-600 text-red-600">
-                    <v-icon name="bi-trash" />
-                </button>
-                </div>
-            </td>
-            </tr>
-        </tbody>
+            <tbody>
+                <tr v-for="(loc, index) in pageItems" :key="loc.id || index">
+                    <td class="p-2 border border-gray-500 text-blue-900 text-center">
+                        {{ index + 1 + (currentPage - 1) * perPage }}
+                    </td>
+                    <td class="p-2 border border-gray-500 text-blue-900">
+                        <p>{{ loc.name }}</p>
+                    </td>
+                    <td class="p-2 border border-gray-500 text-blue-900 text-center">
+                        <p>{{ loc.poscode }}</p>
+                    </td>
+                    <td class="p-2 border border-gray-500 text-blue-900 text-center">
+                        <span class="bg-gray-200 text-gray-700 px-1 rounded-lg">{{ loc.created_at }}</span>
+                    </td>
+                    <td class="p-2 border border-gray-500 text-blue-900 text-center">
+                        <span class="bg-gray-200 text-gray-700 px-1 rounded-lg">{{ loc.updated_at }}</span>
+                    </td>
+                    <td class="p-2 border border-gray-500 text-blue-900">
+                        <div class="flex justify-center">
+                            <button @click="openModalUpdate(loc)" class="mx-1 border p-1 rounded-lg border-amber-600 text-amber-600">
+                                <v-icon name="bi-pen-fill" />
+                            </button>
+                            <button @click="openModalDelete(loc.id)" class="mx-1 border p-1 rounded-lg border-red-600 text-red-600">
+                                <v-icon name="bi-trash" />
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+
 
         </table>
-    </div>
+    </div> 
     <!-- Table-Data -->
 
     <!-- Pagination -->
     <div class="flex justify-end mt-3 gap-2">
-        <button
-            class="px-3 py-1 border rounded"
-            :disabled="currentPage === 1"
-            @click="currentPage--"
-        >
-        Prev
+        <button class="px-3 py-1 border rounded" :disabled="currentPage === 1" @click="currentPage--">
+          Prev
         </button>
 
-        <button
-            v-for="page in totalPages"
-            :key="page"
-            class="px-3 py-1 border rounded"
-            :class="{ 'bg-blue-900 text-white': currentPage === page }"
-            @click="goToPage(page)"
-        >
-        {{ page }}
+        <button v-for="page in totalPages" :key="page" class="px-3 py-1 border rounded" :class="{ 'bg-blue-900 text-white': currentPage === page }" @click="goToPage(page)">
+          {{ page }}
         </button>
-
-        <button
-            class="px-3 py-1 border rounded"
-            :disabled="currentPage === totalPages"
-            @click="currentPage++"
-        >
-        Next
+        <button class="px-3 py-1 border rounded" :disabled="currentPage === totalPages" @click="currentPage++">
+           Next
         </button>
     </div>
     <!-- Pagination -->
 
     <!-- Modal delete -->
-    <div
-        v-if="showDeleteLocationModal"
-        class="fixed inset-0 flex items-center justify-center bg-[#00000034]"
-    >
+    <div v-if="showDeleteLocationModal" class="fixed inset-0 flex items-center justify-center bg-[#00000034]">
         <div class="bg-white p-5 rounded-lg shadow-lg w-96">
+            <h2 class="text-lg font-bold mb-3 text-red-600 border-b border-gray-200 pb-2">លុប</h2>
+            <form>
+                <div>
+                    <p class="mb-4">តើអ្នកប្រាកដថាលុបមែនឬទេ?</p>
+                </div>
 
-        <h2 class="text-lg font-bold mb-3 text-red-600 border-b border-gray-200 pb-2">លុប</h2>
-        <form action="" class="flex items-center justify-between">
-            <div>
-            <p class="mb-4">តើអ្នកប្រាកដថាលុបមែនឬទេ?</p>
-            </div>
-
-            <div class="flex justify-end gap-2 mb-4">
-            <button @click="closeModalDelete" class="px-3 py-1 border rounded">អត់ទេ</button>
-            <button
-                @click="confirmDelete"
-                class="px-3 py-1 border rounded bg-red-600 text-white"
-            >
-                បាទ
-            </button>
-            </div>
-        </form>
-        
+                <div class="flex justify-end gap-2 mb-4">
+                    <button type="button" @click="closeModalDelete" class="px-3 py-1 border rounded">អត់ទេ</button>
+                    <button :disabled="isloading"  type="button" @click="confirmDelete" :class="isloading ? 'px-3 py-1 border rounded bg-gray-400 text-white': 'px-3 py-1 border rounded bg-red-600 text-white'">
+                        {{ isloading ? 'ចាំតិចបងដូចបងចាំគេ...' : 'យល់ព្រមណាបងសុំលាញ់' }}
+                    </button>
+                </div>
+            </form>      
         </div>
     </div>
     <!-- Modal delete -->
 
 
     <!-- Modal Update -->
-    <div
-        v-if="showUpLocationModal"
-        class="fixed inset-0 bg-[#00000034] flex items-center justify-center z-50"
-    >
+    <div v-if="showUpLocationModal" class="fixed inset-0 bg-[#00000034] flex items-center justify-center z-50">
         <div class="bg-white rounded-lg w-auto p-8">
-        <h2 class="text-xl font-bold mb-4 border-b pb-2 border-gray-400">កែប្រែទីតាំង</h2>
+            <h2 class="text-xl font-bold mb-4 border-b pb-2 border-gray-400">កែប្រែទីតាំង</h2>
 
-        <form>
-
-            <!-- location company -->
-            <div class="flex justify-between mb-2">
-                <div class="mb-2 w-[400px] ">
-                    <label class="text-gray-500">ទីតាំង</label>
-                    <input type="text" class="w-full border mt-1 p-2 rounded outline-0" placeholder="បញូលប្រភេទការងាររបស់ក្រុមហ៊ុន"/>
+            <form @submit.prevent="saveUpdate">
+                <!-- location company -->
+                <div class="flex justify-between mb-2">
+                    <div class="mb-2 w-[400px] ">
+                        <label class="text-gray-500">ទីតាំង</label>
+                        <input  v-model="updateLocation.name" type="text" class="w-full border mt-1 p-2 rounded outline-0" placeholder="បញូលប្រភេទការងាររបស់ក្រុមហ៊ុន"/>
+                    </div>
                 </div>
-            </div>
-            <!-- location company -->
+                <!-- location company -->
 
-            <!-- Post Code -->
-            <div class="flex justify-between mb-2">
-                <div class="mb-2 w-[400px] ">
-                    <label class="text-gray-500">PostCode</label>
-                    <input type="text" class="w-full border mt-1 p-2 rounded outline-0" placeholder="00000"/>
+                <!-- Post Code -->
+                <div class="flex justify-between mb-2">
+                    <div class="mb-2 w-[400px] ">
+                        <label class="text-gray-500">PostCode</label>
+                        <input v-model="updateLocation.poscode" type="text" class="w-full border mt-1 p-2 rounded outline-0" placeholder="00000"/>
+                    </div>
                 </div>
-            </div>
-            <!-- Post Code -->
+                <!-- Post Code -->
 
-     
-            <!-- button group -->
-            <div class="flex justify-end gap-2 mt-4">
-            <button type="button" @click="closeModalUpdate" class="px-3 py-1 border rounded">Cancel</button>
-            <button type="submit" @click="saveUpdate" class="px-3 py-1 border rounded bg-blue-900 text-white">Save</button>
-            </div>
-            <!-- button group -->
-        </form>
+        
+                <!-- button group -->
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" @click="closeModalUpdate" class="px-3 py-1 border rounded">Cancel</button>
+                    <button :disabled="isloading" type="submit" @click="saveUpdate" :class="isloading ? `px-3 py-1 border rounded bg-gray-400 text-white`: 'px-3 py-1 border rounded bg-blue-900 text-white'">
+                        {{ isloading ? 'ចាំតិចបងដូចបងចាំគេ...' : 'យល់ព្រមណាបងសុំលាញ់' }}
+                    </button>
+                </div>
+                <!-- button group -->
+            </form>
         </div>
     </div>
     <!-- Modal Update -->

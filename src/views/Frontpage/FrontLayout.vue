@@ -11,7 +11,7 @@
         console.log(authStore.isAuth);
         
         if(!authStore.isAuth){
-            roruter.push('/register')
+            roruter.push('/login')
         }
     })
 

@@ -2,9 +2,17 @@
   
   import { ref } from 'vue';
   import TableLocation from '../components/TableLocation.vue';
+  import { useLocationStore } from '@/stores/location';
 
   const showAddLocationModal = ref(false);
+  const locationStore = useLocationStore()
 
+  const isloading = ref(false)
+
+  const form = ref({
+    name: '',
+    poscode: '',
+  })
 
   function openModal() {
     showAddLocationModal.value = true;
@@ -13,6 +21,32 @@
     showAddLocationModal.value = false;
   }
 
+  async function handleSubmit(e){
+    // prevent refresh page
+    e.preventDefault();
+
+    // create object for store data
+    const payload = {
+      name: form.value.name,
+      poscode: form.value.poscode,
+    }
+
+    try{
+      isloading.value = true
+      // send that object to function createLocation()
+      await locationStore.createLocation(payload);
+      await locationStore.fetchLocation(); 
+      form.name = ''
+      form.poscode = ''
+    }catch(e){
+      console.error(e)
+    }finally{
+      // close current modal
+      closeModal()
+      isloading.value = false
+    }
+
+  } 
 </script>
 
 <template>
@@ -51,13 +85,13 @@
           <div class="bg-white rounded-lg w-auto p-8">
             <h2 class="text-xl font-bold mb-4 border-b pb-2 border-gray-400">បន្ថែមទីតាំង</h2>
 
-            <form>
+            <form @submit="handleSubmit">
 
                 <!-- location company -->
                 <div class="flex justify-between mb-2">
                     <div class="mb-2 w-[400px] ">
                         <label class="text-gray-500">ទីតាំង</label>
-                        <input type="text" class="w-full border mt-1 p-2 rounded outline-0" placeholder="បញូលប្រភេទការងាររបស់ក្រុមហ៊ុន"/>
+                        <input v-model="form.name" type="text" class="w-full border mt-1 p-2 rounded outline-0" placeholder="បញូលប្រភេទការងាររបស់ក្រុមហ៊ុន"/>
                     </div>
                 </div>
                 <!-- location company -->
@@ -66,7 +100,7 @@
                 <div class="flex justify-between mb-2">
                     <div class="mb-2 w-[400px] ">
                         <label class="text-gray-500">PostCode</label>
-                        <input type="text" class="w-full border mt-1 p-2 rounded outline-0" placeholder="00000"/>
+                        <input  v-model="form.poscode" type="text" class="w-full border mt-1 p-2 rounded outline-0" placeholder="00000"/>
                     </div>
                 </div>
                 <!-- Post Code -->
@@ -76,7 +110,9 @@
               <!-- button group -->
               <div class="flex justify-end gap-2 mt-4">
                 <button type="button" @click="closeModal" class="px-3 py-1 border rounded">Cancel</button>
-                <button type="submit" class="px-3 py-1 border rounded bg-blue-900 text-white">Save</button>
+                <button  :disabled="isloading" :class="['px-3 py-1 border rounded text-white transition',isloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-900 hover:bg-blue-800']">
+                  {{ isloading ? 'ចាំតិចប្រូកំពុង Send ហើយ': 'Save' }}
+                </button>
               </div>
               <!-- button group -->
             </form>
