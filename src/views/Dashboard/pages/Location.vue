@@ -3,9 +3,12 @@
   import { ref } from 'vue';
   import TableLocation from '../components/TableLocation.vue';
   import { useLocationStore } from '@/stores/location';
+  import { useToast } from 'vue-toastification';
 
   const showAddLocationModal = ref(false);
   const locationStore = useLocationStore()
+  const toast = useToast();
+  const searchTerm = ref('') 
 
   const isloading = ref(false)
 
@@ -36,6 +39,7 @@
       // send that object to function createLocation()
       await locationStore.createLocation(payload);
       await locationStore.fetchLocation(); 
+      toast.success('Location was created 😭')
       form.name = ''
       form.poscode = ''
     }catch(e){
@@ -61,9 +65,9 @@
       <div class="w-full mt-4">
 
         <div class="flex items-center justify-between w-full">
-          <form action="" class="border border-gray-500 rounded-lg  pe-3">
-            <input type="text" name="" id="" class="p-2 outline-0" placeholder="ស្វែងរក...">
-            <button :tabindex="-1">
+          <form class="border border-gray-500 rounded-lg  pe-3">
+            <input type="text" v-model="searchTerm" class="p-2 outline-0" placeholder="ស្វែងរក...">
+            <button type="button" :tabindex="-1">
               <v-icon name="bi-search" />
             </button>
           </form>
@@ -75,13 +79,10 @@
         </div>
         
         
-        <TableLocation/>
+        <TableLocation :searchTerm="searchTerm"/>
 
         <!-- Add Job Modal -->
-        <div
-          v-if="showAddLocationModal"
-          class="fixed inset-0 bg-[#00000034] flex items-center justify-center z-50"
-        >
+        <div v-if="showAddLocationModal" class="fixed inset-0 bg-[#00000034] flex items-center justify-center z-50">
           <div class="bg-white rounded-lg w-auto p-8">
             <h2 class="text-xl font-bold mb-4 border-b pb-2 border-gray-400">បន្ថែមទីតាំង</h2>
 

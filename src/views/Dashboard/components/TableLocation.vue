@@ -7,21 +7,33 @@
     const isloading = ref(false)
     const toast = useToast();
 
+    // Props
+    const props = defineProps({
+        searchTerm: { type: String, default: "" },
+    });
+
     // Total fake items and pagination settings
     const perPage = 5;
     const currentPage = ref(1);
 
+    // Filtered data
+    const filteredLocations = computed(() => {
+        if (!props.searchTerm) return locationStore.locations;
+
+        return locationStore.locations.filter((loc) =>
+            loc.name.toLowerCase().includes(props.searchTerm.toLowerCase())
+        );
+    });
+
     // Total pages (computed dynamically based on fetched data)
     const totalPages = computed(() =>
-        Math.ceil((locationStore.locations?.length || 0) / perPage)
+        Math.ceil(filteredLocations.value.length / perPage)
     );
 
     // Generate rows for the current page
     const pageItems = computed(() => {
-        const data = locationStore.locations || []; // ensure array
         const start = (currentPage.value - 1) * perPage;
-        const end = start + perPage;
-        return data.slice(start, end); // slice is safe now
+        return filteredLocations.value.slice(start, start + perPage);
     });
 
     function goToPage(page) {
