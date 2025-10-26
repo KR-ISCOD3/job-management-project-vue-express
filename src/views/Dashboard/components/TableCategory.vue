@@ -2,6 +2,7 @@
     // ------------------------- IMPORTS -------------------------
     import { useCategoryStore } from "@/stores/category";
     import { ref, computed, onMounted } from "vue";
+import { useToast } from "vue-toastification";
 
     // ------------------------- PROPS -------------------------
     // Instead of using defineStore (which is wrong here), use defineProps
@@ -14,6 +15,8 @@
     const perPage = 5;                // Items per page
     const currentPage = ref(1);       // Current active page
     const categoryStore = useCategoryStore(); // Access Pinia store
+    const isloading = ref(false) // Isloading State
+    const toast = useToast()
 
     // ------------------------- FILTER & PAGINATION -------------------------
     const filterCategory = computed(() => {
@@ -50,9 +53,17 @@
     }
 
     async function confirmDelete() {
-    console.log("Delete category with ID:", deleteId.value);
-    // TODO: replace with real delete function: await categoryStore.deleteCategory(deleteId.value);
-    closeModalDelete();
+      try{
+        isloading.value = true
+        await categoryStore.deleteCategory(deleteId.value);
+        await categoryStore.fetchallcategory();
+        closeModalDelete();
+        toast.success("Delete Successfully");
+      }catch(e){
+        console.log("Error fetching categories:", e);
+      }finally{
+        isloading.value = false
+      }
     }
 
     // ------------------------- UPDATE MODAL -------------------------
@@ -70,9 +81,17 @@
     }
 
     async function saveUpdate() {
-        console.log("Update category:", updateCategory.value);
-        // TODO: replace with real update call: await categoryStore.updateCategory(updateCategory.value);
-        showUpdateCategoryModal.value = false;
+      try{
+        isloading.value = true
+        await categoryStore.updatecategory(updateCategory.value);
+        await categoryStore.fetchallcategory();
+        closeModalUpdate()
+        toast.success("Update Successfully");
+      }catch(e){
+        console.log("Error fetching categories:", e);
+      }finally{
+        isloading.value = false
+      }
     }
 
     // ------------------------- FETCH CATEGORIES -------------------------
@@ -137,6 +156,7 @@
     <button class="px-3 py-1 border rounded" :disabled="currentPage === totalPages" @click="currentPage++">Next</button>
   </div>
 
+
   <!-- ------------------------- DELETE MODAL ------------------------- -->
   <div v-if="showDeleteCategoryModal" class="fixed inset-0 flex items-center justify-center bg-[#00000034]">
     <div class="bg-white p-5 rounded-lg shadow-lg w-96">
@@ -144,8 +164,10 @@
       <p class="mb-4">តើអ្នកប្រាកដថាលុបមែនឬទេ?</p>
       <div class="flex justify-end gap-2">
         <button @click="closeModalDelete" class="px-3 py-1 border rounded">អត់ទេ</button>
-        <button @click="confirmDelete" class="px-3 py-1 border rounded bg-red-600 text-white">បាទ</button>
-      </div>
+        <button :disabled="isloading"  type="button" @click="confirmDelete" :class="isloading ? 'px-3 py-1 border rounded bg-gray-400 text-white': 'px-3 py-1 border rounded bg-red-600 text-white'">
+            {{ isloading ? 'ចាំតិចបងដូចបងចាំគេ...' : 'យល់ព្រមណាបងសុំលាញ់' }}
+        </button>
+      </div> 
     </div>
   </div>
 
@@ -164,7 +186,10 @@
 
         <div class="flex justify-end gap-2 mt-4">
           <button type="button" @click="closeModalUpdate" class="px-3 py-1 border rounded">Cancel</button>
-          <button type="submit" class="px-3 py-1 border rounded bg-blue-900 text-white">Save</button>
+      
+          <button type="submit" :disabled="isloading" :class="isloading ? 'px-3 py-1 border rounded text-white transition bg-gray-400 cursor-not-allowed' : 'px-3 py-1 border rounded text-white transition bg-blue-900 hover:bg-blue-800'">
+              {{ isloading ? 'ចាំតិចប្រូកំពុង update ហើយ' : 'Update Data' }}
+          </button>
         </div>
       </form>
     </div>

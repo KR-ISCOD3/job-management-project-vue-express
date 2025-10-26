@@ -25,6 +25,7 @@
     try {
       isloading.value = true
       await categoryStore.createCategory(category.value) // Call Pinia action
+      await categoryStore.fetchallcategory();
       closeModal()
       category.value = ''
       toast.success("Category added successfully") // Success message
