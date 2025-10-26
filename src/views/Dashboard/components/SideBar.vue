@@ -30,7 +30,7 @@
         <div class="w-full h-full relative">
             <!-- Logo Website -->
             <div class="w-full text-center border-b-1 border-gray-400 py-2">
-                <img src="../../../assets/image/logo.png" alt="" class="w-[100px] mx-auto">
+                <img src="/image/logo.png" alt="" class="w-[100px] mx-auto">
                 <h1 class="text-xl text-white font-medium mt-2 font-fira">ETEC-JOB</h1>
                 <p class="text-sm text-gray-300 mt-1 leading-6">ធ្វើការជាមួយពួកយើង<br> មិនមែនជាមួយថៃ</p>
             </div>
