@@ -20,7 +20,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // your backend
+        target: 'https://job-express-backend.onrender.com', // your backend
         changeOrigin: true,
         secure: true,
         // optional: rewrite path if your backend doesn't use /api prefix
